@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Níveis de Gastos - Janeiro 2026</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* NOVO: Cabeçalho com logo */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 80px;
+            height: auto;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+        }
+
+        .company-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .company-name {
+            font-size: 0.95em;
+            font-weight: 700;
+            color: #333;
+            line-height: 1.3;
+        }
+
+        .company-branch {
+            font-size: 0.75em;
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .report-date {
+            text-align: right;
+            color: #666;
+            font-size: 0.85em;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.2em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1em;
+        }
+
+        .total-box {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .total-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .total-value {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .levels-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .level-item {
+            opacity: 0;
+            animation: slideIn 0.5s ease-out forwards;
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .level-item:hover {
+            transform: scale(1.08) translateX(10px);
+            z-index: 10;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .levels-container:has(.level-item:hover) .level-item:not(:hover) {
+            opacity: 0.25;
+            filter: blur(3px) grayscale(0.5);
+            transform: scale(0.95);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .level-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .level-name {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
+            transition: all 0.4s ease;
+        }
+
+        .level-item:hover .level-name {
+            color: #667eea;
+            font-size: 1.35em;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+            transform: translateX(8px);
+        }
+
+        .level-value {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #667eea;
+            transition: all 0.4s ease;
+        }
+
+        .level-item:hover .level-value {
+            font-size: 1.45em;
+            color: #764ba2;
+            text-shadow: 0 3px 15px rgba(118, 75, 162, 0.4);
+            transform: scale(1.1);
+        }
+
+        .level-percentage {
+            font-size: 0.85em;
+            color: #999;
+            margin-left: 8px;
+            transition: all 0.4s ease;
+        }
+
+        .level-item:hover .level-percentage {
+            font-size: 1em;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .level-bar-container {
+            position: relative;
+            width: 100%;
+            height: 40px;
+            background: #f0f0f0;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+        }
+
+        .level-item:hover .level-bar-container {
+            height: 50px;
+            background: linear-gradient(90deg, #e8e8e8, #f5f5f5);
+            box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.15), 0 6px 25px rgba(102, 126, 234, 0.25);
+        }
+
+        .level-bar {
+            height: 100%;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 15px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+            transition: all 0.5s ease;
+            width: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .level-item:hover .level-bar {
+            transform: scaleY(1.25);
+            filter: brightness(1.4) saturate(1.5);
+            font-size: 1.1em;
+        }
+
+        .level-bar.animate {
+            width: var(--level-width);
+            transition: width 1.5s ease-out, transform 0.5s ease, filter 0.5s ease, font-size 0.3s ease, box-shadow 0.5s ease;
+        }
+
+        /* Cores diferentes baseadas no nível */
+        .level-critical { background: linear-gradient(90deg, #e74c3c, #c0392b); }
+        .level-item:hover .level-critical { 
+            box-shadow: 0 10px 50px rgba(231, 76, 60, 0.8), 0 0 30px rgba(231, 76, 60, 0.6);
+            background: linear-gradient(90deg, #ff5e4d, #e74c3c);
+        }
+        
+        .level-high { background: linear-gradient(90deg, #e67e22, #d35400); }
+        .level-item:hover .level-high { 
+            box-shadow: 0 10px 50px rgba(230, 126, 34, 0.8), 0 0 30px rgba(230, 126, 34, 0.6);
+            background: linear-gradient(90deg, #ff8c3a, #e67e22);
+        }
+        
+        .level-medium { background: linear-gradient(90deg, #f39c12, #e67e22); }
+        .level-item:hover .level-medium { 
+            box-shadow: 0 10px 50px rgba(243, 156, 18, 0.8), 0 0 30px rgba(243, 156, 18, 0.6);
+            background: linear-gradient(90deg, #ffb02e, #f39c12);
+        }
+        
+        .level-low { background: linear-gradient(90deg, #3498db, #2980b9); }
+        .level-item:hover .level-low { 
+            box-shadow: 0 10px 50px rgba(52, 152, 219, 0.8), 0 0 30px rgba(52, 152, 219, 0.6);
+            background: linear-gradient(90deg, #5dade2, #3498db);
+        }
+        
+        .level-minimal { background: linear-gradient(90deg, #2ecc71, #27ae60); }
+        .level-item:hover .level-minimal { 
+            box-shadow: 0 10px 50px rgba(46, 204, 113, 0.8), 0 0 30px rgba(46, 204, 113, 0.6);
+            background: linear-gradient(90deg, #58d68d, #2ecc71);
+        }
+
+        .info-box {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .info-text {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .logo-container {
+                flex-direction: column;
+            }
+
+            .report-date {
+                text-align: center;
+            }
+
+            h1 {
+                font-size: 1.6em;
+            }
+
+            .total-value {
+                font-size: 2em;
+            }
+
+            .level-name, .level-value {
+                font-size: 0.95em;
+            }
+
+            .level-bar-container {
+                height: 35px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- NOVO: Cabeçalho com Logo -->
+        <div class="header">
+            <div class="logo-container">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="TechMed Logo" class="logo" id="logoImg">
+                <div class="company-info">
+                    <div class="company-name">TECHMED ENGENHARIA<br>HOSPITALAR LTDA</div>
+                    <div class="company-branch">Filial Porto Velho - RO</div>
+                </div>
+            </div>
+            <div class="report-date">
+                <strong>Período:</strong> Janeiro 2026<br>
+                <small>Gerado em: 03/02/2026</small>
+            </div>
+        </div>
+
+        <h1>📊 Níveis de Gastos - Janeiro 2026</h1>
+        <p class="subtitle">Visualização por categorias de despesas</p>
+
+        <div class="total-box">
+            <div class="total-label">Total Gasto no Mês</div>
+            <div class="total-value">R$ 7.898,64</div>
+        </div>
+
+        <div class="levels-container" id="levelsContainer"></div>
+
+        <div class="info-box">
+            <div class="info-title">📌 Classificação dos Níveis</div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-dot" style="background: #e74c3c;"></div>
+                    <div class="info-text">Crítico: Acima de R$ 3.000</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-dot" style="background: #e67e22;"></div>
+                    <div class="info-text">Alto: R$ 1.500 - R$ 3.000</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-dot" style="background: #f39c12;"></div>
+                    <div class="info-text">Médio: R$ 500 - R$ 1.500</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-dot" style="background: #3498db;"></div>
+                    <div class="info-text">Baixo: R$ 200 - R$ 500</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-dot" style="background: #2ecc71;"></div>
+                    <div class="info-text">Mínimo: Abaixo de R$ 200</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Carregar o logo da empresa
+        const logoImg = document.getElementById('logoImg');
+        // Aqui você substituiria pelo caminho real do logo
+        logoImg.src = 'Imagem_do_WhatsApp_de_2025-09-02_à_s__18_19_50_7b41f744-removebg-preview.png';
+
+        const expenses = [
+            { category: 'Aluguel', value: 3202.47 },
+            { category: 'Peças e Insumos', value: 1886.53 },
+            { category: 'Comercial', value: 795.54 },
+            { category: 'Conta de Energia', value: 744.28 },
+            { category: 'Supermercado', value: 370.00 },
+            { category: 'Conta de Água', value: 361.05 },
+            { category: 'Outros', value: 229.00 },
+            { category: 'Conta de Internet', value: 169.77 },
+            { category: 'Veículo', value: 140.00 }
+        ];
+
+        const total = 7898.64;
+        const maxValue = Math.max(...expenses.map(e => e.value));
+
+        function getLevelClass(value) {
+            if (value >= 3000) return 'level-critical';
+            if (value >= 1500) return 'level-high';
+            if (value >= 500) return 'level-medium';
+            if (value >= 200) return 'level-low';
+            return 'level-minimal';
+        }
+
+        const container = document.getElementById('levelsContainer');
+
+        expenses.forEach((expense, index) => {
+            const percentage = ((expense.value / total) * 100).toFixed(1);
+            const barWidth = ((expense.value / maxValue) * 100).toFixed(2);
+            
+            const levelItem = document.createElement('div');
+            levelItem.className = 'level-item';
+            levelItem.style.animationDelay = (index * 0.1) + 's';
+            
+            levelItem.innerHTML = `
+                <div class="level-header">
+                    <div class="level-name">${expense.category}</div>
+                    <div>
+                        <span class="level-value">R$ ${expense.value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        <span class="level-percentage">${percentage}%</span>
+                    </div>
+                </div>
+                <div class="level-bar-container">
+                    <div class="level-bar ${getLevelClass(expense.value)}" style="--level-width: ${barWidth}%">
+                        ${percentage}%
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(levelItem);
+        });
+
+        // Animar as barras após um pequeno delay
+        setTimeout(() => {
+            document.querySelectorAll('.level-bar').forEach(bar => {
+                bar.classList.add('animate');
+            });
+        }, 300);
+    </script>
+</body>
+</html>
